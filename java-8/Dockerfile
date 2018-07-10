@@ -59,10 +59,7 @@ RUN set -ex \
     && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV JAVA_VERSION=8 \
-    JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64" \
-    JDK_VERSION="8u171-b11-2~14.04" \
-    JDK_HOME="/usr/lib/jvm/java-8-openjdk-amd64" \
-    JRE_HOME="/usr/lib/jvm/java-8-openjdk-amd64/jre" \
+    JAVA_HOME="/usr/lib/jvm/java-8-oracle" \
     ANT_VERSION=1.9.6 \
     MAVEN_VERSION=3.3.3 \
     MAVEN_HOME="/usr/share/maven" \
@@ -74,12 +71,11 @@ ENV JAVA_VERSION=8 \
 RUN set -ex \
     && apt-get update \
     && apt-get install -y software-properties-common=$PROPERTIES_COMMON_VERSIION \
-    && add-apt-repository ppa:openjdk-r/ppa \
+    && echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
+    && add-apt-repository ppa:webupd8team/java \
     && apt-get update \
-    && apt-get -y install openjdk-$JAVA_VERSION-jdk=$JDK_VERSION \
+    && apt-get -y install oracle-java8-installer \
     && apt-get clean \
-    # Ensure Java cacerts symlink points to valid location
-    && update-ca-certificates -f \
     && mkdir -p /usr/src/ant \
     && wget "http://archive.apache.org/dist/ant/binaries/apache-ant-$ANT_VERSION-bin.tar.gz" -O /usr/src/ant/apache-ant-$ANT_VERSION-bin.tar.gz \
     && tar -xzf /usr/src/ant/apache-ant-$ANT_VERSION-bin.tar.gz -C /usr/local \
