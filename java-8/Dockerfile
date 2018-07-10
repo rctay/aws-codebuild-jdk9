@@ -68,8 +68,7 @@ ENV JAVA_VERSION=8 \
     MAVEN_HOME="/usr/share/maven" \
     MAVEN_CONFIG="/root/.m2" \
     GRADLE_VERSION=2.7 \
-    PROPERTIES_COMMON_VERSIION=0.92.37.8 \
-    PYTHON_TOOL_VERSION="3.3-*"
+    PROPERTIES_COMMON_VERSIION=0.92.37.8
 
 # Install Java
 RUN set -ex \
@@ -77,7 +76,6 @@ RUN set -ex \
     && apt-get install -y software-properties-common=$PROPERTIES_COMMON_VERSIION \
     && add-apt-repository ppa:openjdk-r/ppa \
     && apt-get update \
-    && apt-get -y install python-setuptools=$PYTHON_TOOL_VERSION \
     && apt-get -y install openjdk-$JAVA_VERSION-jdk=$JDK_VERSION \
     && apt-get clean \
     # Ensure Java cacerts symlink points to valid location
