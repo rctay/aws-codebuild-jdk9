@@ -17,8 +17,7 @@ ENV DOCKER_BUCKET="download.docker.com" \
     DOCKER_CHANNEL="stable" \
     DOCKER_SHA256="a9e90a73c3cdfbf238f148e1ec0eaff5eb181f92f35bdd938fd7dab18e1c4647" \
     DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \
-    DOCKER_COMPOSE_VERSION="1.21.2" \
-    GITVERSION_VERSION="3.6.5"
+    DOCKER_COMPOSE_VERSION="1.21.2"
 
 # Install git, SSH, and other utilities
 RUN set -ex \
@@ -56,15 +55,6 @@ RUN set -ex \
        sgml-base=1.26+* sgml-data=2.0.* subversion=1.8.* tcl=8.6.* tcl8.6=8.6.* xml-core=0.13+* xmlto=0.0.* xsltproc=1.1.* \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
-
-# Download and set up GitVersion
-RUN set -ex \
-    && wget "https://github.com/GitTools/GitVersion/releases/download/v${GITVERSION_VERSION}/GitVersion_${GITVERSION_VERSION}.zip" -O /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && mkdir -p /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && unzip /tmp/GitVersion_${GITVERSION_VERSION}.zip -d /usr/local/GitVersion_${GITVERSION_VERSION} \
-    && rm /tmp/GitVersion_${GITVERSION_VERSION}.zip \
-    && echo "mono /usr/local/GitVersion_${GITVERSION_VERSION}/GitVersion.exe /output json /showvariable \$1" >> /usr/local/bin/gitversion \
-    && chmod +x /usr/local/bin/gitversion
 
 # Install Docker
 RUN set -ex \
