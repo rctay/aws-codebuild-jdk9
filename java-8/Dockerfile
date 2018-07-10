@@ -12,13 +12,6 @@
 
 FROM ubuntu:14.04.5
 
-ENV DOCKER_BUCKET="download.docker.com" \
-    DOCKER_VERSION="17.09.0-ce" \
-    DOCKER_CHANNEL="stable" \
-    DOCKER_SHA256="a9e90a73c3cdfbf238f148e1ec0eaff5eb181f92f35bdd938fd7dab18e1c4647" \
-    DIND_COMMIT="3b5fac462d21ca164b3778647420016315289034" \
-    DOCKER_COMPOSE_VERSION="1.21.2"
-
 # Install git, SSH, and other utilities
 RUN set -ex \
     && echo 'Acquire::CompressionTypes::Order:: "gz";' > /etc/apt/apt.conf.d/99use-gzip-compression \
@@ -56,24 +49,6 @@ RUN set -ex \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Install Docker
-RUN set -ex \
-    && curl -fSL "https://${DOCKER_BUCKET}/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
-    && echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
-    && tar --extract --file docker.tgz --strip-components 1  --directory /usr/local/bin/ \
-    && rm docker.tgz \
-    && docker -v \
-# set up subuid/subgid so that "--userns-remap=default" works out-of-the-box
-    && addgroup dockremap \
-    && useradd -g dockremap dockremap \
-    && echo 'dockremap:165536:65536' >> /etc/subuid \
-    && echo 'dockremap:165536:65536' >> /etc/subgid \
-    && wget "https://raw.githubusercontent.com/docker/docker/${DIND_COMMIT}/hack/dind" -O /usr/local/bin/dind \
-    && curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64 > /usr/local/bin/docker-compose \
-    && chmod +x /usr/local/bin/dind /usr/local/bin/docker-compose \
-# Ensure docker-compose works
-    && docker-compose version
-
 # Install dependencies by all python images equivalent to buildpack-deps:jessie
 # on the public repos.
 
@@ -82,10 +57,6 @@ RUN set -ex \
     && python /tmp/get-pip.py \
     && pip install awscli==1.* \
     && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-VOLUME /var/lib/docker
-
-COPY dockerd-entrypoint.sh /usr/local/bin/
 
 ENV JAVA_VERSION=8 \
     JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64" \
